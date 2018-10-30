@@ -10,6 +10,8 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 public class Client {
+	public final static String SERVER_ADDR = "127.0.0.1";
+	
 	public static void main(String[] args) {
 		Socket socket = null;
 
@@ -19,14 +21,11 @@ public class Client {
 
 		try {
 			// 서버 연결
-			socket = new Socket("127.0.0.1", 5000); // socket(),connect();
+			socket = new Socket(SERVER_ADDR, 5000); // socket(),connect();
 			System.out.println("Successfully connected to server.");
 
 			FileSender fs = new FileSender(socket, filename, printOpt);
 			fs.start();
-			//@@@@@@@@@@@@  프린팅 관련부분 진행해야됨 ↓
-			
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

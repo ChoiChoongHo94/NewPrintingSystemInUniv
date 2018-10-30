@@ -15,6 +15,7 @@ import Printing.PrintSpooler;
 
 public class Server {
 	public final static int PORT = 5000;
+	public final static String SAVEPATH = "./";
 	static PrintSpooler printspooler = new PrintSpooler();
 
 	public static void main(String[] args) {
@@ -33,9 +34,16 @@ public class Server {
 				socket = serversocket.accept(); // listen(),accept();
 				System.out.println("A client is connected.");
 				long start = System.currentTimeMillis();
-
+				
+				//파일전송 테스트
+				FileReceiver fr = new FileReceiver(socket, SAVEPATH, start);
+				fr.printOptReceiving();
+				fr.fileReceiving();
+				
+				/*
 				Printing p = new Printing(socket, start);
 				p.start();
+				*/
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -63,8 +71,8 @@ public class Server {
 		private FileReceiver fr;
 		private PrintInfo pi;
 
-		public Printing(Socket socket, long starttime) {
-			fr = new FileReceiver(socket, starttime);
+		public Printing(Socket socket,String savepath, long starttime) {
+			fr = new FileReceiver(socket, savepath, starttime);
 		}
 
 		@Override
@@ -88,6 +96,7 @@ class FileReceiver {
 	Socket socket;
 	long start;
 	int control = 0;
+	String savepath;
 
 	// 파일 전송 관련
 	File f;
@@ -101,13 +110,14 @@ class FileReceiver {
 	String filepath;
 	String printOpt;
 
-	public FileReceiver(Socket socket, long starttime) {
+	public FileReceiver(Socket socket, String savepath, long starttime) {
 		this.socket = socket;
+		this.savepath = savepath;
 		this.start = starttime;
 	}
 
-	private void setFilepathAndPrintOpt(String data) {
-		filepath = "./testclass/tmp/" + data.substring(0, data.indexOf(" "));
+	private void setFilepathAndPrintOpt(String savepath, String data) {
+		filepath = savepath + data.substring(0, data.indexOf(" "));
 		printOpt = data.substring(data.indexOf(" ") + 1);
 	}
 
@@ -117,7 +127,7 @@ class FileReceiver {
 			br = new BufferedReader(isr);
 
 			String data = br.readLine();
-			setFilepathAndPrintOpt(data);
+			setFilepathAndPrintOpt(savepath, data);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -175,11 +185,7 @@ class FileReceiver {
 		}
 	}
 
-	public String getFilePath() {
-		return filepath;
-	}
+	public String getFilePath() {return filepath;}
 
-	public String[] getPrintOpt() {
-		return printOpt.split(" ");
-	}
+	public String[] getPrintOpt() {return printOpt.split(" ");}
 }
