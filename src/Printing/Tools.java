@@ -1,8 +1,13 @@
 package Printing;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Rectangle;
@@ -10,10 +15,11 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfDocument;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfWriter;
 
 public class Tools {
-	// only for A4
+		// only for A4
 		public static void NUp(String src, String dest, int pow) throws IOException, DocumentException {
 			// reader for the src file
 			PdfReader reader = new PdfReader(src);
@@ -130,18 +136,49 @@ public class Tools {
 				
 				// scales and positions page
 				page = writer.getImportedPage(reader, i);
+				//테두리 추가하려면 여기서
+				//~
 				//cb.addTemplate(template, xScale*xs, xRote*xs, yRote*ys, yScale*ys, offsetX, offsetY); 
 				cb.addTemplate(page, factor, 0, 0, factor, offsetX, offsetY);
+				
 
 			}
 			document.close();
 			reader.close();
 		}
 		
-		/*
-		public void pageBorder(String src, String dest) {
+		public static void setPageBorder(String src, String dest) throws IOException, DocumentException {
+			PdfReader reader = new PdfReader(src); 
+	    	PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(dest));
+	    	
+	    	PdfContentByte canvas; 
+	    	for (int i = 1; i <= reader.getNumberOfPages(); i++) {   
+	    		canvas = stamper.getOverContent(i);
+	    		Rectangle rect = reader.getPageSize(1);
+	            rect.setBorder(Rectangle.BOX); // left, right, top, bottom border
+	            rect.setBorderWidth(2); // a width of 5 user units
+	            rect.setBorderColor(BaseColor.BLACK); // a red border
+	            rect.setUseVariableBorders(true); // the full width will be visible
+	            canvas.rectangle(rect);
+	    	} 
+	    	stamper.close();
+	    	//reader.close();
+	    	
+	    	System.gc();
+	        System.runFinalization();
+	        File file = new File(dest);
+	        Path original = Paths.get(src);
+	        Files.deleteIfExists(original);
+	        file.renameTo(new File(src));
+	        /*
+	    	if(Files.deleteIfExists(original)) {
+	    		System.out.println("삭제 성공");
+	    	}
+	    	if(file.renameTo(new File(SRC)))
+	    		System.out.println("성공");
+	    	*/
 		}
-		*/
+		
 		/*
 		 * public void rotatePdf() {
 		 * 

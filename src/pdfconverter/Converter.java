@@ -97,26 +97,6 @@ public class Converter {
 			Dimension pgsize = null;
 			Image slideImage = null;
 			BufferedImage img = null;
-			if (fileType.equalsIgnoreCase("ppt")) {
-				SlideShow ppt = new SlideShow(inputStream);
-				pgsize = ppt.getPageSize();
-				Slide slide[] = ppt.getSlides();
-				pdfDocument.setPageSize(new Rectangle((float) pgsize.getWidth(), (float) pgsize.getHeight()));
-				pdfWriter.open();
-				pdfDocument.open();
-				for (int i = 0; i < slide.length; i++) {
-					img = new BufferedImage((int) Math.ceil(pgsize.width * zoom), (int) Math.ceil(pgsize.height * zoom),
-							BufferedImage.TYPE_INT_RGB);
-					Graphics2D graphics = img.createGraphics();
-					graphics.setTransform(at);
-					graphics.setPaint(Color.white);
-					graphics.fill(new Rectangle2D.Float(0, 0, pgsize.width, pgsize.height));
-					slide[i].draw(graphics);
-					graphics.getPaint();
-					slideImage = Image.getInstance(img, null);
-					table.addCell(new PdfPCell(slideImage, true));
-				}
-			}
 			if (fileType.equalsIgnoreCase("pptx")) {
 				XMLSlideShow ppt = new XMLSlideShow(inputStream);
 				pgsize = ppt.getPageSize();
@@ -150,5 +130,28 @@ public class Converter {
 		} catch (DocumentException ex) {
 			System.out.println(ex.getMessage());
 		}
+		
+		/* ppt
+		 * 			if (fileType.equalsIgnoreCase("ppt")) {
+				SlideShow ppt = new SlideShow(inputStream);
+				pgsize = ppt.getPageSize();
+				Slide slide[] = ppt.getSlides();
+				pdfDocument.setPageSize(new Rectangle((float) pgsize.getWidth(), (float) pgsize.getHeight()));
+				pdfWriter.open();
+				pdfDocument.open();
+				for (int i = 0; i < slide.length; i++) {
+					img = new BufferedImage((int) Math.ceil(pgsize.width * zoom), (int) Math.ceil(pgsize.height * zoom),
+							BufferedImage.TYPE_INT_RGB);
+					Graphics2D graphics = img.createGraphics();
+					graphics.setTransform(at);
+					graphics.setPaint(Color.white);
+					graphics.fill(new Rectangle2D.Float(0, 0, pgsize.width, pgsize.height));
+					slide[i].draw(graphics);
+					graphics.getPaint();
+					slideImage = Image.getInstance(img, null);
+					table.addCell(new PdfPCell(slideImage, true));
+				}
+			}
+		 */
 	}
 }
