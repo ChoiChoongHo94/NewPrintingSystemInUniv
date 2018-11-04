@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.poi.xwpf.converter.core.XWPFConverterException;
 import org.apache.poi.xwpf.converter.pdf.PdfConverter;
 import org.apache.poi.xwpf.converter.pdf.PdfOptions;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -32,27 +34,59 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-public class Converter {
+//import static org.testng.Assert.assertNotNull;
+//import static org.testng.Assert.assertTrue;
 
+import java.io.FilenameFilter;
+import java.util.Set;
+
+
+
+
+/* ★★★★★Converter 기능은 안드로이드 상에서 진행. ★★★★★
+ *  ms-graph api 키
+ * msal396e5af3-1816-4b77-9cd9-7c732bf704f4://auth
+ * urn:ietf:wg:oauth:2.0:oob
+ * https://login.microsoftonline.com/common/oauth2/nativeclient
+ */
+
+public class Converter {
 	public static void convertWORDtoPDF(String docPath, String pdfPath) {
-		try {
-			InputStream doc = new FileInputStream(new File(docPath));
-			XWPFDocument document = new XWPFDocument(doc);
-			PdfOptions options = PdfOptions.create();
-			OutputStream out = new FileOutputStream(new File(pdfPath));
-			PdfConverter.getInstance().convert(document, out, options);
-			System.out.println("Word file converted to PDF successfully");
-		} catch (FileNotFoundException ex) {
-			System.out.println(ex.getMessage());
-		} catch (IOException ex) {
-			System.out.println(ex.getMessage());
-		}
+		// 세번째 시도(Microsoft-Graph 사용) => 안드로이드에서 시행
+		
+		/* 두번째 시도(openoffice, jodconverter 사용)
+		OfficeManager officeManager = new DefaultOfficeManagerConfiguration()
+				.setOfficeHome("C:/Program Files (x86)/OpenOffice 4").buildOfficeManager();
+		OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
+		DocumentFormatRegistry formatRegistry = converter.getFormatRegistry();
+		officeManager.start();
+
+		File inputFile = new File(docPath);
+		//DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
+		File outputFile = new File(pdfPath);
+		DocumentFormat outputFormat = formatRegistry.getFormatByExtension("pdf");
+		converter.convert(inputFile, outputFile, outputFormat);
+		System.out.println("Word file converted to PDF successfully");
+		*/
+		
+
+		/* 첫번째 시도(Apache-poi 사용)
+		 * try { InputStream doc = new FileInputStream(new File(docPath)); XWPFDocument
+		 * document = new XWPFDocument(doc);
+		 * 
+		 * PdfOptions options = PdfOptions.create(); OutputStream out = new
+		 * FileOutputStream(new File(pdfPath));
+		 * PdfConverter.getInstance().convert(document, out, options); doc.close();
+		 * out.close(); System.out.println("Word file converted to PDF successfully"); }
+		 * catch (FileNotFoundException ex) { System.out.println(ex.getMessage()); }
+		 * catch (IOException ex) { System.out.println(ex.getMessage()); }
+		 */
 	}
 
 	public static void convertPPTtoPDF(String sourcepath, String destinationPath, String fileType) {
 		try {
 			FileInputStream inputStream = new FileInputStream(sourcepath);
-			double zoom = 2;
+			double zoom = 1;
 			AffineTransform at = new AffineTransform();
 			at.setToScale(zoom, zoom);
 			Document pdfDocument = new Document();

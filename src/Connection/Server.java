@@ -12,6 +12,7 @@ import java.net.Socket;
 
 import Printing.PrintInfo;
 import Printing.PrintSpooler;
+import pdfconverter.Converter;
 
 public class Server {
 	public final static int PORT = 5000;
@@ -25,7 +26,19 @@ public class Server {
 		WorkingPrintSpooler wps = new WorkingPrintSpooler();
 		wps.start();
 		
+		
+		//test
+		//Converter.convertPPTtoPDF("./test_file/ppt_test.pptx", "./test_file/ppt_test.pdf", "pptx");
+		//System.exit(1);
+		//PrintInfo testpi = new PrintInfo("./test_file/word_test.pdf", 0, 1);
+		PrintInfo testpi2 = new PrintInfo("./test_file/ppt_test.pdf", 2, 1);
+		
+		printspooler.enjobq(testpi2);
+		
+		
 		Socket socket = null;
+		
+		/* 통신 부분
 		try (ServerSocket serversocket = new ServerSocket(PORT)) {// socket(), bind()
 			while (true) {
 				// 리스너 소켓 생성 후 대기
@@ -39,22 +52,27 @@ public class Server {
 				FileReceiver fr = new FileReceiver(socket, SAVEPATH, start);
 				fr.printOptReceiving();
 				fr.fileReceiving();
+				*/
 				
-				/*
-				Printing p = new Printing(socket, start);
+				/* 모든 기능 실행
+				Printing p = new Printing(socket, SAVEPATH, start);
+				//콘솔 메시지 띠우기 예정.
+				
 				p.start();
 				*/
+		/*
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 
 	public static class WorkingPrintSpooler extends Thread {
 		@Override
 		public void run() {
-			while (true) {
-				if (!printspooler.jobqIsEmpty()) {
+			while (true) { // 1초마다 jobq를 확인.
+				if (!printspooler.jobqIsEmpty()) { 
 					printspooler.print();
 				} else {
 					try {
@@ -80,8 +98,7 @@ public class Server {
 			fr.printOptReceiving();
 			fr.fileReceiving();
 			String[] printopt = fr.getPrintOpt();
-			pi = new PrintInfo(fr.getFilePath(), Boolean.valueOf(printopt[0]), Integer.getInteger(printopt[1]),
-					Integer.getInteger(printopt[2]));
+			pi = new PrintInfo(fr.getFilePath(), Integer.getInteger(printopt[0]), Integer.getInteger(printopt[1]));
 			printspooler.enjobq(pi);
 		}
 	}
