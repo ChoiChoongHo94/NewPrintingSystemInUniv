@@ -23,9 +23,11 @@ public class Client {
 			// 서버 연결
 			socket = new Socket(SERVER_ADDR, 5000); // socket(),connect();
 			System.out.println("Successfully connected to server.");
-
+			
 			FileSender fs = new FileSender(socket, filename, printOpt);
 			fs.start();
+			//pdf 변환추가
+			//로딩 화면
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

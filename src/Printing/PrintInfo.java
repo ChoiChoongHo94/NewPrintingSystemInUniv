@@ -15,12 +15,15 @@ public class PrintInfo {
 	private DocFlavor doc_flavor = DocFlavor.INPUT_STREAM.AUTOSENSE;
 	private PrintRequestAttributeSet attr_set = new HashPrintRequestAttributeSet();
 	
-	public PrintInfo(String path, int pow, int copy) {
-		setAttrSet( copy);
+	public PrintInfo(String path, int pow, int copy, int border) {
+		setAttrSet(copy);
 		
 		if(pow >= 1) {
 			try {
-				String newpath = "_" + path;
+				String newpath = path.substring(0, path.lastIndexOf("/") + 1) + "_" + path.substring(path.lastIndexOf("/") + 1);
+				
+				if(border > 0)
+					Tools.setPageBorder(path, newpath);
 				Tools.NUp(path, newpath, pow);
 				pdfpath = newpath;
 			} catch (IOException e) {

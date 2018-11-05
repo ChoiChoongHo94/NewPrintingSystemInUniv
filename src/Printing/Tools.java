@@ -12,7 +12,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfDocument;
+//import com.itextpdf.text.pdf.PdfDocument;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
@@ -70,19 +70,17 @@ public class Tools {
 			Rectangle unitSize;
 			if (isPPT) {//ppt
 				//pow = 1 (2up)
-				System.out.println(newSize.getWidth()+", "+ newSize.getHeight());
+				//System.out.println(newSize.getWidth()+", "+ newSize.getHeight());
 				unitSize = new Rectangle(newSize.getWidth(), newSize.getHeight()/2);
-				System.out.println(unitSize.getWidth()+", "+ unitSize.getHeight());
+				//System.out.println(unitSize.getWidth()+", "+ unitSize.getHeight());
 				if(pow == 2) //(4up)
 					unitSize = new Rectangle(unitSize.getWidth() / 2, unitSize.getHeight());
-				System.out.println(unitSize.getWidth()+", "+ unitSize.getHeight());
+				//System.out.println(unitSize.getWidth()+", "+ unitSize.getHeight());
 			} else {//word
 				//pow = 1 (2up)
 				unitSize = new Rectangle(newSize.getWidth()/2, newSize.getHeight());
 			}
-			//여백 추가
-			//~~
-
+			
 			int n = (int) Math.pow(2, pow); //페이지당 unit개수
 			int r = (int) Math.pow(2, pow / 2); //행
 			int c = n / r; //열
@@ -97,7 +95,7 @@ public class Tools {
 			float offsetX, offsetY, factor;
 			int total = reader.getNumberOfPages();
 			factor = Math.min( unitSize.getWidth()/ currentSize.getWidth(), 
-					   unitSize.getHeight()/ currentSize.getHeight());
+					   unitSize.getHeight()/ currentSize.getHeight()) * (float)0.95;
 			
 			/*test
 			System.out.println("======================================");
@@ -155,15 +153,15 @@ public class Tools {
 	    	for (int i = 1; i <= reader.getNumberOfPages(); i++) {   
 	    		canvas = stamper.getOverContent(i);
 	    		Rectangle rect = reader.getPageSize(1);
-	            rect.setBorder(Rectangle.BOX); // left, right, top, bottom border
-	            rect.setBorderWidth(2); // a width of 5 user units
-	            rect.setBorderColor(BaseColor.BLACK); // a red border
-	            rect.setUseVariableBorders(true); // the full width will be visible
+	            rect.setBorder(Rectangle.BOX); 
+	            rect.setBorderWidth(2); 
+	            rect.setBorderColor(BaseColor.BLACK); 
+	            rect.setUseVariableBorders(true); 
 	            canvas.rectangle(rect);
 	    	} 
 	    	stamper.close();
-	    	//reader.close();
-	    	
+	    	reader.close();
+
 	    	System.gc();
 	        System.runFinalization();
 	        File file = new File(dest);

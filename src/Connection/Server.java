@@ -23,17 +23,19 @@ public class Server {
 		disableWarning();
 		
 		//jobq 체크 쓰레드
+		/*
 		WorkingPrintSpooler wps = new WorkingPrintSpooler();
 		wps.start();
-		
+		*/
 		
 		//test
 		//Converter.convertPPTtoPDF("./test_file/ppt_test.pptx", "./test_file/ppt_test.pdf", "pptx");
 		//System.exit(1);
 		//PrintInfo testpi = new PrintInfo("./test_file/word_test.pdf", 0, 1);
-		PrintInfo testpi2 = new PrintInfo("./test_file/ppt_test.pdf", 2, 1);
 		
-		printspooler.enjobq(testpi2);
+		PrintInfo testpi2 = new PrintInfo("./test_file2/ppt_test.pdf", 2, 1, 1); // (path, pow, copies, border)
+		
+		//printspooler.enjobq(testpi2);
 		
 		
 		Socket socket = null;
@@ -89,7 +91,7 @@ public class Server {
 		private FileReceiver fr;
 		private PrintInfo pi;
 
-		public Printing(Socket socket,String savepath, long starttime) {
+		public Printing(Socket socket, String savepath, long starttime) {
 			fr = new FileReceiver(socket, savepath, starttime);
 		}
 
@@ -98,7 +100,8 @@ public class Server {
 			fr.printOptReceiving();
 			fr.fileReceiving();
 			String[] printopt = fr.getPrintOpt();
-			pi = new PrintInfo(fr.getFilePath(), Integer.getInteger(printopt[0]), Integer.getInteger(printopt[1]));
+			pi = new PrintInfo(fr.getFilePath(), Integer.getInteger(printopt[0]), 
+							   Integer.getInteger(printopt[1]), Integer.getInteger(printopt[2]));
 			printspooler.enjobq(pi);
 		}
 	}
@@ -195,7 +198,7 @@ class FileReceiver {
 				bos.close();
 				fos.close();
 				dis.close();
-				socket.close();
+				socket.close();	
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
