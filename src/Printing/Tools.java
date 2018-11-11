@@ -134,8 +134,7 @@ public class Tools {
 				
 				// scales and positions page
 				page = writer.getImportedPage(reader, i);
-				//테두리 추가하려면 여기서
-				//~
+
 				//cb.addTemplate(template, xScale*xs, xRote*xs, yRote*ys, yScale*ys, offsetX, offsetY); 
 				cb.addTemplate(page, factor, 0, 0, factor, offsetX, offsetY);
 				
@@ -178,7 +177,7 @@ public class Tools {
 		}
 		
 		/*
-		 * public void rotatePdf() {
+		 * public static void stampID(String src) {
 		 * 
 		 * }
 		 */

@@ -22,6 +22,10 @@ public class PrintInfo {
 			try {
 				String newpath = path.substring(0, path.lastIndexOf("/") + 1) + "_" + path.substring(path.lastIndexOf("/") + 1);
 				
+				//test
+				//System.out.println(newpath);
+				//System.exit(1);
+				
 				if(border > 0)
 					Tools.setPageBorder(path, newpath);
 				Tools.NUp(path, newpath, pow);

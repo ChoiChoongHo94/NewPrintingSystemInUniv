@@ -16,6 +16,7 @@ import javax.print.PrintException;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import javax.print.SimpleDoc;
+import javax.print.attribute.Attribute;
 import javax.print.attribute.AttributeSet;
 import javax.print.attribute.standard.PrinterState;
 import javax.print.attribute.standard.PrinterStateReason;
@@ -29,9 +30,12 @@ import org.jpedal.utils.PdfBook;
 
 public class PrintSpooler { // Singleton
 	
-	private Queue<PrintInfo> jobq = new LinkedList<PrintInfo>();
-	List<Pair> printerlist = new ArrayList<Pair>();
-	private PrintJobWatcher jobwatcher = new PrintJobWatcher();
+	static private Queue<PrintInfo> jobq = new LinkedList<PrintInfo>();
+	//static List<Pair> printerlist = new ArrayList<Pair>();
+	static List<PrintService> printerlist = new ArrayList<PrintService>();
+	//private PrintJobWatcher jobwatcher = new PrintJobWatcher();
+	
+	static boolean isAvailable = true;
 	
 	public PrintSpooler() {
 		// 프린터 목록 생성 및 초기화
@@ -42,14 +46,20 @@ public class PrintSpooler { // Singleton
 	private void setPrinterList() { // 진행중
 		PrintService[] pl = PrintServiceLookup.lookupPrintServices(DocFlavor.SERVICE_FORMATTED.PAGEABLE,null);
 		List<String> virtualPrinters = new ArrayList<String>();
+		
+		/*
+		 * 가상 프린터 추가하기
+		 */
+		virtualPrinters.add("Send To OneNote 2016");
 		virtualPrinters.add("Fax");
 		virtualPrinters.add("Microsoft Print to PDF");
 		virtualPrinters.add("Microsoft XPS Document Writer");
+		virtualPrinters.add("Canon MG2900 series Printer");
+		
 		for(PrintService ps : pl) {
-			//test
-			System.out.println(ps.getName());
 			if(!virtualPrinters.contains(ps.getName())) {
-				printerlist.add(new Pair(true, ps));
+				//printerlist.add(new Pair(true, ps));
+				printerlist.add(ps);
 			}
 		}
 	}
@@ -71,25 +81,43 @@ public class PrintSpooler { // Singleton
 	*/
 	
 	private synchronized PrintService findPrintService() {
+		/* 원래
 		for(Pair pair: printerlist) {
 			//test
-			System.out.println(pair.second.getName());
-			
+			System.out.println(pair.second.getName());			
 			if(pair.first) {
 				pair.first = false;
 				return pair.second;
-			}
+			}	
 		}
 		return null;
+		*/
+		
+		while(true) {
+			for (PrintService ps : printerlist) {
+				for (Attribute a : ps.getAttributes().toArray()) {
+					if (a.getName().equals("queued-job-count") && a.toString().equals("0")) {
+						return ps;
+					}
+				}
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		//return null;
 	}
 	
 	public void print() { //job setting and print, PrintSpooler 전용
 		PrintService printservice = findPrintService();
+
 		if(printservice == null) {
-			System.out.println("All of printers is being used. Wait..");
-			jobwatcher.isAvailable = false;
-			jobwatcher.waitForDone();
+			System.out.println("Critical Error. System is exited.");
+			System.exit(0);
 		}
+
 		
 		//test
 		System.out.println("before deq: " + jobq.size());
@@ -114,42 +142,53 @@ public class PrintSpooler { // Singleton
 		PdfBook pdfBook = new PdfBook(decodePdf, printservice, printinfo.getAttrSet());
 		SimpleDoc doc = new SimpleDoc(pdfBook, DocFlavor.SERVICE_FORMATTED.PAGEABLE, null);
 		DocPrintJob job = printservice.createPrintJob();
+		//PrintJobWatcher pjw = new PrintJobWatcher(job);
 		try {
 			job.print(doc, printinfo.getAttrSet());
-			jobwatcher.setListener(job);
+			
+			//test
+			//System.out.println("test");
 		} catch (PrintException e) {
 			e.printStackTrace();
 		} 
 	}
 	
+	/*
+	public synchronized void waitForDone() {
+		try {
+			while (!isAvailable) {
+				wait();
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	*/
 	public synchronized void enjobq(PrintInfo printinfo) {jobq.offer(printinfo);}
 	public PrintInfo dejobq() {return jobq.poll();}
 	public boolean jobqIsEmpty() {return jobq.isEmpty();}
 	
-	class PrintJobWatcher { //singleton
-		boolean isAvailable = true;
-		public synchronized void setListener(DocPrintJob job) {
+	/*
+	static class PrintJobWatcher { 
+		PrintJobWatcher(DocPrintJob job) {
 			job.addPrintJobListener(new PrintJobAdapter() {
 				public void printJobCanceled(PrintJobEvent pje) {
+					System.out.println("A Print job is canceled.");
 					allDone();
 				}
 
 				public void printJobCompleted(PrintJobEvent pje) {
+					System.out.println("A Print job is completed.");
 					allDone();
 				}
 
 				public void printJobFailed(PrintJobEvent pje) {
-					allDone();
-				}
-
-				public void printJobNoMoreEvents(PrintJobEvent pje) {
+					System.out.println("A Print job is failed.");
 					allDone();
 				}
 
 				void allDone() {
 					synchronized (PrintJobWatcher.this) {
-						//test
-						System.out.println("A Print job is done.");
 						if(isAvailable == false)
 							isAvailable = true;
 						
@@ -158,17 +197,8 @@ public class PrintSpooler { // Singleton
 				}
 			});
 		}
-
-		public synchronized void waitForDone() {
-			try {
-				while (!isAvailable) {
-					wait();
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
 	}
+	*/
 }
 
 class Pair{

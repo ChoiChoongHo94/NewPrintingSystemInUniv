@@ -28,17 +28,24 @@ public class Server {
 		wps.start();
 		*/
 		
+		
 		//test
 		//Converter.convertPPTtoPDF("./test_file/ppt_test.pptx", "./test_file/ppt_test.pdf", "pptx");
 		//System.exit(1);
 		//PrintInfo testpi = new PrintInfo("./test_file/word_test.pdf", 0, 1);
 		
+		//String => "파일명 2 1 1"
 		PrintInfo testpi2 = new PrintInfo("./test_file2/ppt_test.pdf", 2, 1, 1); // (path, pow, copies, border)
+		PrintInfo testpi3 = new PrintInfo("./test_file2/ppt_test.pdf", 2, 1, 0);
+		//test
+		printspooler.enjobq(testpi2);
+		printspooler.enjobq(testpi3);
+		printspooler.print();
+		printspooler.print();
 		
-		//printspooler.enjobq(testpi2);
 		
 		
-		Socket socket = null;
+		//Socket socket = null;
 		
 		/* 통신 부분
 		try (ServerSocket serversocket = new ServerSocket(PORT)) {// socket(), bind()
@@ -58,7 +65,7 @@ public class Server {
 				
 				/* 모든 기능 실행
 				Printing p = new Printing(socket, SAVEPATH, start);
-				//콘솔 메시지 띠우기 예정.
+				//콘솔 메시지 띠우기 예정. 시간 학번 이름 파일명 pow copy border
 				
 				p.start();
 				*/
@@ -151,7 +158,6 @@ class FileReceiver {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		;
 	}
 
 	public void fileReceiving() {
