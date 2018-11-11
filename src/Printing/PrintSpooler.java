@@ -31,9 +31,7 @@ import org.jpedal.utils.PdfBook;
 public class PrintSpooler { // Singleton
 	
 	static private Queue<PrintInfo> jobq = new LinkedList<PrintInfo>();
-	//static List<Pair> printerlist = new ArrayList<Pair>();
 	static List<PrintService> printerlist = new ArrayList<PrintService>();
-	//private PrintJobWatcher jobwatcher = new PrintJobWatcher();
 	
 	static boolean isAvailable = true;
 	
@@ -58,41 +56,12 @@ public class PrintSpooler { // Singleton
 		
 		for(PrintService ps : pl) {
 			if(!virtualPrinters.contains(ps.getName())) {
-				//printerlist.add(new Pair(true, ps));
 				printerlist.add(ps);
 			}
 		}
 	}
 	
-	//PrinterState를 지원하지 않는 프린터일 수 있음.
-	/*
-	private static void getPrinterState() {
-		PrintService[] pl = PrintServiceLookup.lookupPrintServices(DocFlavor.SERVICE_FORMATTED.PAGEABLE,null);
-		//test
-		System.out.println(pl.length);
-		for(PrintService ps : pl) {
-			AttributeSet attr = ps.getAttributes();
-			String printerState = attr.get(PrinterState.class).toString();
-			String printerStateReason = attr.get(PrinterStateReason.class).toString();
-			System.out.println("printerState = " + printerState); // May be IDLE, PROCESSING, STOPPED or UNKNOWN
-			System.out.println("printerStateReason = " + printerStateReason);
-		}
-	}
-	*/
-	
 	private synchronized PrintService findPrintService() {
-		/* 원래
-		for(Pair pair: printerlist) {
-			//test
-			System.out.println(pair.second.getName());			
-			if(pair.first) {
-				pair.first = false;
-				return pair.second;
-			}	
-		}
-		return null;
-		*/
-		
 		while(true) {
 			for (PrintService ps : printerlist) {
 				for (Attribute a : ps.getAttributes().toArray()) {
@@ -142,63 +111,16 @@ public class PrintSpooler { // Singleton
 		PdfBook pdfBook = new PdfBook(decodePdf, printservice, printinfo.getAttrSet());
 		SimpleDoc doc = new SimpleDoc(pdfBook, DocFlavor.SERVICE_FORMATTED.PAGEABLE, null);
 		DocPrintJob job = printservice.createPrintJob();
-		//PrintJobWatcher pjw = new PrintJobWatcher(job);
 		try {
 			job.print(doc, printinfo.getAttrSet());
-			
-			//test
-			//System.out.println("test");
 		} catch (PrintException e) {
 			e.printStackTrace();
 		} 
 	}
-	
-	/*
-	public synchronized void waitForDone() {
-		try {
-			while (!isAvailable) {
-				wait();
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-	*/
+
 	public synchronized void enjobq(PrintInfo printinfo) {jobq.offer(printinfo);}
 	public PrintInfo dejobq() {return jobq.poll();}
 	public boolean jobqIsEmpty() {return jobq.isEmpty();}
-	
-	/*
-	static class PrintJobWatcher { 
-		PrintJobWatcher(DocPrintJob job) {
-			job.addPrintJobListener(new PrintJobAdapter() {
-				public void printJobCanceled(PrintJobEvent pje) {
-					System.out.println("A Print job is canceled.");
-					allDone();
-				}
-
-				public void printJobCompleted(PrintJobEvent pje) {
-					System.out.println("A Print job is completed.");
-					allDone();
-				}
-
-				public void printJobFailed(PrintJobEvent pje) {
-					System.out.println("A Print job is failed.");
-					allDone();
-				}
-
-				void allDone() {
-					synchronized (PrintJobWatcher.this) {
-						if(isAvailable == false)
-							isAvailable = true;
-						
-						PrintJobWatcher.this.notify();
-					}
-				}
-			});
-		}
-	}
-	*/
 }
 
 class Pair{

@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import Printing.PrintInfo;
 import Printing.PrintSpooler;
@@ -34,15 +37,16 @@ public class Server {
 		//System.exit(1);
 		//PrintInfo testpi = new PrintInfo("./test_file/word_test.pdf", 0, 1);
 		
-		//String => "파일명 2 1 1"
-		PrintInfo testpi2 = new PrintInfo("./test_file2/ppt_test.pdf", 2, 1, 1); // (path, pow, copies, border)
-		PrintInfo testpi3 = new PrintInfo("./test_file2/ppt_test.pdf", 2, 1, 0);
+		//String => "파일명.확장자 pow copy border 학번_이름"
+		PrintInfo testpi2 = new PrintInfo("./test_file2/ppt_test.pdf", 2, 1, 1, "201320210_최충호"); // (path, pow, copies, border)
+		//PrintInfo testpi3 = new PrintInfo("./test_file2/ppt_test.pdf", 2, 1, 0, "201320210_최충호");
 		//test
+		/*
 		printspooler.enjobq(testpi2);
 		printspooler.enjobq(testpi3);
 		printspooler.print();
 		printspooler.print();
-		
+		*/
 		
 		
 		//Socket socket = null;
@@ -108,7 +112,7 @@ public class Server {
 			fr.fileReceiving();
 			String[] printopt = fr.getPrintOpt();
 			pi = new PrintInfo(fr.getFilePath(), Integer.getInteger(printopt[0]), 
-							   Integer.getInteger(printopt[1]), Integer.getInteger(printopt[2]));
+							   Integer.getInteger(printopt[1]), Integer.getInteger(printopt[2]), printopt[3]);
 			printspooler.enjobq(pi);
 		}
 	}
@@ -145,6 +149,11 @@ class FileReceiver {
 
 	private void setFilepathAndPrintOpt(String savepath, String data) {
 		filepath = savepath + data.substring(0, data.indexOf(" "));
+		//같은 파일명이 이미 있는 지 확인하고 처리.
+		if(Files.exists(Paths.get(filepath))) {
+			processDup();
+		};
+		
 		printOpt = data.substring(data.indexOf(" ") + 1);
 	}
 
@@ -208,6 +217,17 @@ class FileReceiver {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private void processDup() { //중복파일 처리
+		int dup = 1;
+		while (true) {
+			String beforeExtension = filepath.substring(0, filepath.lastIndexOf("."));
+			filepath = beforeExtension + "(" + dup + ")" + ".pdf";
+			if (Files.notExists(Paths.get(filepath)))
+				return;
+			dup++;
 		}
 	}
 
