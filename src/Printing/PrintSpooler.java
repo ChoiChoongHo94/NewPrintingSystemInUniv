@@ -1,15 +1,10 @@
 package Printing;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import javax.print.Doc;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
 import javax.print.PrintException;
@@ -17,11 +12,6 @@ import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import javax.print.SimpleDoc;
 import javax.print.attribute.Attribute;
-import javax.print.attribute.AttributeSet;
-import javax.print.attribute.standard.PrinterState;
-import javax.print.attribute.standard.PrinterStateReason;
-import javax.print.event.PrintJobAdapter;
-import javax.print.event.PrintJobEvent;
 
 import org.jpedal.PdfDecoder;
 import org.jpedal.fonts.FontMappings;

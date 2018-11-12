@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import Printing.PrintInfo;
@@ -22,15 +21,13 @@ public class Server {
 	public final static String SAVEPATH = "./";
 	static PrintSpooler printspooler = new PrintSpooler();
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		disableWarning();
+		Converter.setLicenses();
 		
 		//jobq 체크 쓰레드
-		/*
-		WorkingPrintSpooler wps = new WorkingPrintSpooler();
-		wps.start();
-		*/
-		
+		JobQueueMonitor jqm = new JobQueueMonitor();
+		jqm.start();
 		
 		//test
 		//Converter.convertPPTtoPDF("./test_file/ppt_test.pptx", "./test_file/ppt_test.pdf", "pptx");
@@ -38,7 +35,7 @@ public class Server {
 		//PrintInfo testpi = new PrintInfo("./test_file/word_test.pdf", 0, 1);
 		
 		//String => "파일명.확장자 pow copy border 학번_이름"
-		PrintInfo testpi2 = new PrintInfo("./test_file2/ppt_test.pdf", 2, 1, 1, "201320210_최충호"); // (path, pow, copies, border)
+		//PrintInfo testpi2 = new PrintInfo("./test_file2/ppt_test.pdf", 2, 1, 1, "201320210_최충호"); // (path, pow, copies, border)
 		//PrintInfo testpi3 = new PrintInfo("./test_file2/ppt_test.pdf", 2, 1, 0, "201320210_최충호");
 		//test
 		/*
@@ -48,10 +45,8 @@ public class Server {
 		printspooler.print();
 		*/
 		
-		
-		//Socket socket = null;
-		
-		/* 통신 부분
+		// 통신 부분
+		Socket socket = null;
 		try (ServerSocket serversocket = new ServerSocket(PORT)) {// socket(), bind()
 			while (true) {
 				// 리스너 소켓 생성 후 대기
@@ -61,27 +56,23 @@ public class Server {
 				System.out.println("A client is connected.");
 				long start = System.currentTimeMillis();
 				
-				//파일전송 테스트
+				/*파일전송 테스트
 				FileReceiver fr = new FileReceiver(socket, SAVEPATH, start);
 				fr.printOptReceiving();
 				fr.fileReceiving();
 				*/
 				
-				/* 모든 기능 실행
+				// 모든 기능 실행
 				Printing p = new Printing(socket, SAVEPATH, start);
-				//콘솔 메시지 띠우기 예정. 시간 학번 이름 파일명 pow copy border
-				
 				p.start();
-				*/
-		/*
+		
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		*/
 	}
 
-	public static class WorkingPrintSpooler extends Thread {
+	static class JobQueueMonitor extends Thread {
 		@Override
 		public void run() {
 			while (true) { // 1초마다 jobq를 확인.
@@ -98,7 +89,7 @@ public class Server {
 		}
 	}
 
-	public static class Printing extends Thread {
+	static class Printing extends Thread {
 		private FileReceiver fr;
 		private PrintInfo pi;
 
@@ -220,7 +211,7 @@ class FileReceiver {
 		}
 	}
 	
-	private void processDup() { //중복파일 처리
+	private synchronized void processDup() { //중복파일 처리
 		int dup = 1;
 		while (true) {
 			String beforeExtension = filepath.substring(0, filepath.lastIndexOf("."));

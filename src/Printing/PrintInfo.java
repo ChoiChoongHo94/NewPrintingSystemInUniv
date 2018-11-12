@@ -7,8 +7,7 @@ import javax.print.attribute.*;
 import javax.print.attribute.standard.*;
 
 import com.itextpdf.text.DocumentException;
-
-//import pdfconverter.Converter;
+import pdfconverter.Converter;
 
 public class PrintInfo {
 	private String pdfpath;
@@ -20,6 +19,15 @@ public class PrintInfo {
 	public PrintInfo(String path, int pow, int copy, int border, String idAndName) {
 		studentIDandName = idAndName;
 		setAttrSet(copy);
+		
+		if(path.substring(path.lastIndexOf(".") +1 ).equalsIgnoreCase("docx"))
+			try {
+				path = Converter.convertDOCXtoPDF(path);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		else if(path.substring(path.lastIndexOf(".") +1 ).equalsIgnoreCase("pptx"))
+			path = Converter.convertPPTXtoPDF(path);
 		
 		if(pow >= 1) {
 			try {
