@@ -16,6 +16,8 @@ public class PrintInfo {
 	private String studentIDandName;
 	private boolean isAddStampIDatLast = false; //copy 1 = false, copy > 1 = true;
 	
+	public PrintInfo() {};
+	
 	public PrintInfo(String path, int pow, int copy, int border, String idAndName) {
 		studentIDandName = idAndName;
 		setAttrSet(copy);

@@ -7,27 +7,30 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import ManagerUI.MainApp;
+import ManagerUI.ManagerUI2Controller;
 import Printing.PrintInfo;
 import Printing.PrintSpooler;
+import javafx.application.Application;
 import pdfconverter.Converter;
 
-public class Server {
-	public final static int PORT = 5000;
-	public final static String SAVEPATH = "./";
-	static PrintSpooler printspooler = new PrintSpooler();
+public class Server{
+	private static PrintSpooler printspooler = new PrintSpooler();
 
 	public static void main(String[] args) throws Exception {
 		disableWarning();
-		Converter.setLicenses();
+		//Converter.setLicenses();
+		
+		Application.launch(MainApp.class, args);
 		
 		//jobq 체크 쓰레드
 		JobQueueMonitor jqm = new JobQueueMonitor();
 		jqm.start();
+		
 		
 		//test
 		//Converter.convertPPTtoPDF("./test_file/ppt_test.pptx", "./test_file/ppt_test.pdf", "pptx");
@@ -46,6 +49,17 @@ public class Server {
 		*/
 		
 		// 통신 부분
+		
+		
+	}
+	
+	public static PrintSpooler getPrintSpooler() {
+		return printspooler;
+	}
+	
+	/*
+	static class ServerThread extends Thread{		@Override
+		public void run() {
 		Socket socket = null;
 		try (ServerSocket serversocket = new ServerSocket(PORT)) {// socket(), bind()
 			while (true) {
@@ -63,6 +77,7 @@ public class Server {
 				*/
 				
 				// 모든 기능 실행
+	/*
 				Printing p = new Printing(socket, SAVEPATH, start);
 				p.start();
 		
@@ -70,8 +85,10 @@ public class Server {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		}
 	}
-
+	*/
+	
 	static class JobQueueMonitor extends Thread {
 		@Override
 		public void run() {
@@ -105,6 +122,7 @@ public class Server {
 			pi = new PrintInfo(fr.getFilePath(), Integer.getInteger(printopt[0]), 
 							   Integer.getInteger(printopt[1]), Integer.getInteger(printopt[2]), printopt[3]);
 			printspooler.enjobq(pi);
+			System.out.println(printopt[3] + " 프린트 요청");
 		}
 	}
 

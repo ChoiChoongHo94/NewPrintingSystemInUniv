@@ -9,7 +9,6 @@ import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
 import javax.print.PrintException;
 import javax.print.PrintService;
-import javax.print.PrintServiceLookup;
 import javax.print.SimpleDoc;
 import javax.print.attribute.Attribute;
 
@@ -26,18 +25,12 @@ public class PrintSpooler { // Singleton
 	static boolean isAvailable = true;
 	
 	public PrintSpooler() {
-		// 프린터 목록 생성 및 초기화
-		setPrinterList();
-		System.out.println("Connected printers: " + printerlist.size());
+		// 프린터 목록 생성 및 초기화		
 	}
 	
-	private void setPrinterList() { // 진행중
-		PrintService[] pl = PrintServiceLookup.lookupPrintServices(DocFlavor.SERVICE_FORMATTED.PAGEABLE,null);
-		List<String> virtualPrinters = new ArrayList<String>();
-		
+	public void setPrinterList(List<PrintService> pl) { // 진행중 
 		/*
-		 * 가상 프린터 추가하기
-		 */
+		List<String> virtualPrinters = new ArrayList<String>();
 		virtualPrinters.add("Send To OneNote 2016");
 		virtualPrinters.add("Fax");
 		virtualPrinters.add("Microsoft Print to PDF");
@@ -49,6 +42,9 @@ public class PrintSpooler { // Singleton
 				printerlist.add(ps);
 			}
 		}
+		*/
+		printerlist = pl;
+		System.out.println("Connected printers: " + printerlist.size());
 	}
 	
 	private synchronized PrintService findPrintService() {
@@ -111,6 +107,7 @@ public class PrintSpooler { // Singleton
 	public synchronized void enjobq(PrintInfo printinfo) {jobq.offer(printinfo);}
 	public PrintInfo dejobq() {return jobq.poll();}
 	public boolean jobqIsEmpty() {return jobq.isEmpty();}
+	public int jobqSize() {return jobq.size(); }
 }
 
 class Pair{
