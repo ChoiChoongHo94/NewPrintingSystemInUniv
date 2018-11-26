@@ -33,7 +33,7 @@ public class PrintSpooler { // Singleton
 		// 프린터 목록 생성 및 초기화		
 	}
 	
-	public void setPrinterList(List<PrintService> pl) { // 진행중 
+	public void setPrinterList(List<PrintService> pl) { 
 		/*
 		List<String> virtualPrinters = new ArrayList<String>();
 		virtualPrinters.add("Send To OneNote 2016");
@@ -55,7 +55,7 @@ public class PrintSpooler { // Singleton
 	private synchronized PrintService findPrintService() {
 		while(true) {
 			for (PrintService ps : printerlist) {
-				if (ps.getAttribute(QueuedJobCount.class).equals("0")) {
+				if (ps.getAttribute(QueuedJobCount.class).toString().equals("0")) {
 					return ps;
 				}
 				try {
@@ -69,9 +69,19 @@ public class PrintSpooler { // Singleton
 	}
 	
 	public void deletePrinter(PrintService ps) {
-		if(!ps.getAttribute(QueuedJobCount.class).equals("0"))
+		if(!ps.getAttribute(QueuedJobCount.class).toString().equals("0")) {
 			enUrgentJobq(currentJobList.get(ps.getName()));
+			System.out.println(ps.getName()+"'s print job is enqueued into urgertJobq.");
+		}
 		printerlist.remove(ps);
+		System.out.println(ps.getName() + " is removed.");
+		System.out.println("Connected printers: " + printerlist.size());
+	}
+	
+	public void restartPrinter(PrintService ps) {
+		printerlist.add(ps);
+		System.out.println(ps.getName() + " is connected.");
+		System.out.println("Connected printers: " + printerlist.size());
 	}
 	
 	public void print() { //job setting and print, PrintSpooler 전용
@@ -124,12 +134,3 @@ public class PrintSpooler { // Singleton
 	public int jobqSize() {return jobq.size() + urgentJobq.size(); }
 }
 
-class Pair{
-	boolean first; //현재 사용 가능 여부
-	PrintService second;
-	
-	Pair(boolean isAvailable, PrintService second){
-		this.first = isAvailable;
-		this.second = second;
-	}
-}

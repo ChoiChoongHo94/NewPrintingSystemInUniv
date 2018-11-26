@@ -61,6 +61,7 @@ public class ManagerUI2Controller implements Initializable {
 	
 	public void setTableView() {
 		printerStateTable.setItems(mainApp.getPrinterData());
+		printerStateTable.getSelectionModel().setCellSelectionEnabled(false);
 	}
 	
 	public void setEveryColumn() {
@@ -72,11 +73,12 @@ public class ManagerUI2Controller implements Initializable {
             @Override
             public TableCell<PrintService, Void> call(final TableColumn<PrintService, Void> param) {
                 final TableCell<PrintService, Void> cell = new TableCell<PrintService, Void>() {
-
+                	
+                	TableCell<PrintService, Void> thisCell = this;
                     private Button btn = new Button("중지");
                     {
                     	btn.setTextFill(Color.RED);
-                    	btn.setFont(Font.font("System",FontWeight.BOLD, 12));
+                    	btn.setFont(Font.font("System",FontWeight.EXTRA_BOLD, 12));
                     	btn.setPrefWidth(107.0);
                         btn.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
@@ -84,12 +86,12 @@ public class ManagerUI2Controller implements Initializable {
                             	if(btn.getText().equals("중지")){
                             		btn.setText("재가동");
                             		btn.setTextFill(Color.GREEN);
-                            		//handleStopBtn()
+									handleStopBtn(thisCell.getTableRow().getItem());
                             	}
                             	else {
                             		btn.setText("중지");
                             		btn.setTextFill(Color.RED);
-                            		//handleRestartBtn()
+                            		handleRestartBtn(thisCell.getTableRow().getItem());
                             	}
                             }
                         });
@@ -113,12 +115,12 @@ public class ManagerUI2Controller implements Initializable {
         //printerStateTable.getColumns().add(colBtn);
 	}
 	
-	private void handleStopBtn() throws Exception{
-		
+	private void handleStopBtn(PrintService ps){
+		printspooler.deletePrinter(ps);
 	}
 
-	private void handleRestartBtn() throws Exception{
-		
+	private void handleRestartBtn(PrintService ps){
+		printspooler.restartPrinter(ps);
 	}
 	
 	public void updateQState(Integer jobqLength) {
