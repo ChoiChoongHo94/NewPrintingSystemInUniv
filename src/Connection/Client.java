@@ -10,7 +10,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 public class Client {
-	public final static String SERVER_ADDR = "127.0.0.1";
+	public final static String SERVER_ADDR = "127.0.0.1"; //변경 필요
 	
 	public static void main(String[] args) {
 		Socket socket = null;

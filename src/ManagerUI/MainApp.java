@@ -45,6 +45,7 @@ public class MainApp extends Application {
 				System.exit(0);
 			}
 		});
+		this.primaryStage.setResizable(false);
 		showManagerUI();
 	}
 	
@@ -71,13 +72,14 @@ public class MainApp extends Application {
 		ManagerUI2Controller controller2 = (ManagerUI2Controller) replaceSceneContent("managerUI2.fxml");
 		controller2.setPrimaryStage(primaryStage);
 		controller2.setPrinterSpooler(printspooler);
+		controller2.setMainApp(this);
+		controller2.setTableView();
 	}
 	
 	public Initializable replaceSceneContent(String fxml) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
 			Parent root = loader.load();
-			
 			Scene scene = new Scene(root);
 			primaryStage.setScene(scene);
 			return (Initializable) loader.getController();
@@ -91,6 +93,9 @@ public class MainApp extends Application {
 		return printerData;
 	}
 	
+	public void setPrinterData(ObservableList<PrintService> printerData) {
+		this.printerData = printerData;
+	}
 	
 
 	/*

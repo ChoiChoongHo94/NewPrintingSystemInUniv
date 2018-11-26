@@ -1,36 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="400.0" maxWidth="500.0" minHeight="400.0" minWidth="500.0" prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ManagerUI.ManagerUI2Controller">
+<AnchorPane maxHeight="400.0" maxWidth="807.0" minHeight="400.0" minWidth="500.0" prefHeight="400.0" prefWidth="807.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ManagerUI.ManagerUI2Controller">
    <children>
-      <TextArea fx:id="ta" editable="false" layoutX="14.0" layoutY="15.0" prefHeight="371.0" prefWidth="368.0" />
-      <GridPane layoutX="386.0" layoutY="32.0" prefHeight="41.0" prefWidth="100.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="79.0" text="[대기 큐]" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-               <font>
-                  <Font name="System Bold" size="15.0" />
-               </font>
-            </Label>
-            <Label fx:id="qLength" alignment="CENTER" prefWidth="39.0" text="Label" textFill="#0004ff" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
-               <font>
-                  <Font size="15.0" />
-               </font>
-            </Label>
-         </children>
-      </GridPane>
+      <TextArea fx:id="ta" editable="false" layoutX="14.0" layoutY="15.0" prefHeight="371.0" prefWidth="523.0" />
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="632.0" layoutY="38.0" prefHeight="19.0" prefWidth="79.0" text="[대기 큐]" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </Label>
+      <Label fx:id="qLength" alignment="CENTER" layoutX="652.0" layoutY="58.0" prefWidth="39.0" text="Label" textFill="#0004ff">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <TableView fx:id="printerStateTable" layoutX="549.0" layoutY="100.0" prefHeight="286.0" prefWidth="244.0">
+        <columns>
+          <TableColumn fx:id="printerName" prefWidth="135.0" text="Printer Name" />
+            <TableColumn fx:id="colBtn" prefWidth="107.0" resizable="false" text="-" />
+        </columns>
+      </TableView>
    </children>
 </AnchorPane>

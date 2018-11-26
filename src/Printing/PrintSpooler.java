@@ -1,6 +1,8 @@
 package Printing;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -11,6 +13,7 @@ import javax.print.PrintException;
 import javax.print.PrintService;
 import javax.print.SimpleDoc;
 import javax.print.attribute.Attribute;
+import javax.print.attribute.standard.QueuedJobCount;
 
 import org.jpedal.PdfDecoder;
 import org.jpedal.fonts.FontMappings;
@@ -19,6 +22,8 @@ import org.jpedal.utils.PdfBook;
 
 public class PrintSpooler { // Singleton
 	
+	static private HashMap<String,PrintInfo> currentJobList = new HashMap<String,PrintInfo>();
+	static private Queue<PrintInfo> urgentJobq = new LinkedList<PrintInfo>();
 	static private Queue<PrintInfo> jobq = new LinkedList<PrintInfo>();
 	static List<PrintService> printerlist = new ArrayList<PrintService>();
 	
@@ -50,10 +55,8 @@ public class PrintSpooler { // Singleton
 	private synchronized PrintService findPrintService() {
 		while(true) {
 			for (PrintService ps : printerlist) {
-				for (Attribute a : ps.getAttributes().toArray()) {
-					if (a.getName().equals("queued-job-count") && a.toString().equals("0")) {
-						return ps;
-					}
+				if (ps.getAttribute(QueuedJobCount.class).equals("0")) {
+					return ps;
 				}
 				try {
 					Thread.sleep(1000);
@@ -65,6 +68,12 @@ public class PrintSpooler { // Singleton
 		//return null;
 	}
 	
+	public void deletePrinter(PrintService ps) {
+		if(!ps.getAttribute(QueuedJobCount.class).equals("0"))
+			enUrgentJobq(currentJobList.get(ps.getName()));
+		printerlist.remove(ps);
+	}
+	
 	public void print() { //job setting and print, PrintSpooler Àü¿ë
 		PrintService printservice = findPrintService();
 
@@ -72,13 +81,13 @@ public class PrintSpooler { // Singleton
 			System.out.println("Critical Error. System is exited.");
 			System.exit(0);
 		}
-
 		
 		//test
 		System.out.println("before deq: " + jobq.size());
 		//test end
 		
 		PrintInfo printinfo = dejobq();
+		currentJobList.put(printservice.getName(), printinfo);
 		
 		//test
 		System.out.println("after deq: " + jobq.size());
@@ -103,11 +112,16 @@ public class PrintSpooler { // Singleton
 			e.printStackTrace();
 		} 
 	}
-
+	
+	public synchronized void enUrgentJobq(PrintInfo printinfo) { urgentJobq.offer(printinfo); }
 	public synchronized void enjobq(PrintInfo printinfo) {jobq.offer(printinfo);}
-	public PrintInfo dejobq() {return jobq.poll();}
-	public boolean jobqIsEmpty() {return jobq.isEmpty();}
-	public int jobqSize() {return jobq.size(); }
+	public synchronized PrintInfo dejobq() {
+		if(!urgentJobq.isEmpty())
+			return urgentJobq.poll();
+		return jobq.poll();
+	}
+	public boolean jobqIsEmpty() {return urgentJobq.isEmpty()||jobq.isEmpty();}
+	public int jobqSize() {return jobq.size() + urgentJobq.size(); }
 }
 
 class Pair{

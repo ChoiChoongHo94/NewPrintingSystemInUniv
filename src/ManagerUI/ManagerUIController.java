@@ -35,6 +35,7 @@ public class ManagerUIController {
 	
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
+		//set TableView
 		printerTable.setItems(mainApp.getPrinterData());
 	}
 	
@@ -50,8 +51,8 @@ public class ManagerUIController {
 			tmppl.add(ps);
 		}
 		
-		
 		//다음 화면으로 넘어가기
+		mainApp.setPrinterData(selectedPS);
 		mainApp.gotoManageUI2();
 		printspooler.setPrinterList(tmppl);
 		//Thread.sleep(2000);
