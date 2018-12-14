@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import ManagerUI.MainApp;
-import ManagerUI.ManagerUI2Controller;
 import Printing.PrintInfo;
 import Printing.PrintSpooler;
 import javafx.application.Application;
@@ -23,7 +22,7 @@ public class Server{
 
 	public static void main(String[] args) throws Exception {
 		disableWarning();
-		//Converter.setLicenses();
+		Converter.setLicenses();
 		
 		Application.launch(MainApp.class, args);
 		
@@ -92,7 +91,10 @@ public class Server{
 	static class JobQueueMonitor extends Thread {
 		@Override
 		public void run() {
-			while (true) { // 1초마다 jobq를 확인.
+			while (true) { // 1초마다 실행
+				//가동중이었는지 확인
+				
+				//jobq 확인
 				if (!printspooler.jobqIsEmpty()) { 
 					printspooler.print();
 				} else {

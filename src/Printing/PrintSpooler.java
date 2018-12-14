@@ -1,8 +1,9 @@
 package Printing;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -12,8 +13,9 @@ import javax.print.DocPrintJob;
 import javax.print.PrintException;
 import javax.print.PrintService;
 import javax.print.SimpleDoc;
-import javax.print.attribute.Attribute;
 import javax.print.attribute.standard.QueuedJobCount;
+import javax.print.event.PrintServiceAttributeEvent;
+import javax.print.event.PrintServiceAttributeListener;
 
 import org.jpedal.PdfDecoder;
 import org.jpedal.fonts.FontMappings;
@@ -22,6 +24,7 @@ import org.jpedal.utils.PdfBook;
 
 public class PrintSpooler { // Singleton
 	
+	//static private List<String> ongoingPrinters = new ArrayList<String>();
 	static private HashMap<String,PrintInfo> currentJobList = new HashMap<String,PrintInfo>();
 	static private Queue<PrintInfo> urgentJobq = new LinkedList<PrintInfo>();
 	static private Queue<PrintInfo> jobq = new LinkedList<PrintInfo>();
@@ -29,11 +32,37 @@ public class PrintSpooler { // Singleton
 	
 	static boolean isAvailable = true;
 	
+	private Alarm alarm = new Alarm();
+	
 	public PrintSpooler() {
 		// 프린터 목록 생성 및 초기화		
 	}
 	
-	public void setPrinterList(List<PrintService> pl) { 
+	//각 프린터에 작업완료 이벤트리스터 설정
+	public void setJobCompleteListener() {
+		for(PrintService ps : printerlist) {
+			ps.addPrintServiceAttributeListener((PrintServiceAttributeListener) new PrintServiceAttributeListener() {
+				@Override
+				public void attributeUpdate(PrintServiceAttributeEvent psae) {
+					PrintService ps = psae.getPrintService();
+					if(ps.getAttribute(QueuedJobCount.class).toString().equals("0") 
+							&& currentJobList.containsKey(ps.getName())) {
+						jobCompleteProcess(ps);
+					}
+				}
+			});
+		}
+	}
+	
+	//한 프린터의 작업완료시 처리해야할 작업
+	public void jobCompleteProcess(PrintService ps) {
+		System.out.println("\\u001B[34m" + currentJobList.get(ps.getName()).getStudentIDandName()
+							+": " + ps.getName() + "\u001B[0m");
+		alarm.playAlarm();
+		currentJobList.remove(ps.getName());
+	}
+	
+	public void setPrinterList(List<PrintService> tmppl) { 
 		/*
 		List<String> virtualPrinters = new ArrayList<String>();
 		virtualPrinters.add("Send To OneNote 2016");
@@ -48,7 +77,7 @@ public class PrintSpooler { // Singleton
 			}
 		}
 		*/
-		printerlist = pl;
+		printerlist = tmppl;
 		System.out.println("Connected printers: " + printerlist.size());
 	}
 	
@@ -80,7 +109,7 @@ public class PrintSpooler { // Singleton
 	
 	public void restartPrinter(PrintService ps) {
 		printerlist.add(ps);
-		System.out.println(ps.getName() + " is connected.");
+		System.out.println(ps.getName() + " is reconnected.");
 		System.out.println("Connected printers: " + printerlist.size());
 	}
 	
@@ -96,7 +125,10 @@ public class PrintSpooler { // Singleton
 		System.out.println("before deq: " + jobq.size());
 		//test end
 		
+		//프린트할 정보 큐에서 가져오기
 		PrintInfo printinfo = dejobq();
+		
+		//현재 작업 임시저장
 		currentJobList.put(printservice.getName(), printinfo);
 		
 		//test
@@ -133,4 +165,5 @@ public class PrintSpooler { // Singleton
 	public boolean jobqIsEmpty() {return urgentJobq.isEmpty()||jobq.isEmpty();}
 	public int jobqSize() {return jobq.size() + urgentJobq.size(); }
 }
+
 

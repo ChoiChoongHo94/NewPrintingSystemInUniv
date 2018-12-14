@@ -16,6 +16,7 @@ public class PrintInfo {
 	private String studentIDandName;
 	private boolean isAddStampIDatLast = false; //copy 1 = false, copy > 1 = true;
 	
+	//»ý¼ºÀÚ
 	public PrintInfo() {};
 	
 	public PrintInfo(String path, int pow, int copy, int border, String idAndName) {
@@ -58,9 +59,10 @@ public class PrintInfo {
 			isAddStampIDatLast = true;
 		}
 	}
-	
+
 	public boolean getIsAddStampIDatLast() { return isAddStampIDatLast; }
 	public String getPdfPath() { return pdfpath; }
+	public String getStudentIDandName() {return studentIDandName;}
 	public DocFlavor getDocFlavor() { return doc_flavor; }
 	public PrintRequestAttributeSet getAttrSet() { return attr_set; }
 }

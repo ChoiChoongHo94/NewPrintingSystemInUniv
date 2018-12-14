@@ -54,7 +54,9 @@ public class ManagerUIController {
 		//다음 화면으로 넘어가기
 		mainApp.setPrinterData(selectedPS);
 		mainApp.gotoManageUI2();
+		//printspooler.setPreviousState(tmppl);
 		printspooler.setPrinterList(tmppl);
+		printspooler.setJobCompleteListener();
 		//Thread.sleep(2000);
 		ServerThread server = new ServerThread();
 		server.start();

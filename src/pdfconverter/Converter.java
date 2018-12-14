@@ -26,7 +26,7 @@ public class Converter {
 	
 	public static void setLicenses() throws Exception {
 		com.aspose.words.License license1 = new com.aspose.words.License();
-		license1.setLicense("Aspose.Words.lic");
+		license1.setLicense("./lib/Aspose.Words.lic");
 
 		if (license1.isLicensed()) {
 		    System.out.println("Words.License is Set!");
