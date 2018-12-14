@@ -39,7 +39,7 @@ public class PrintInfo {
 				if(border > 0)
 					Tools.setPageBorder(path, newpath);
 				Tools.NUp(path, newpath, pow);
-				Tools.stampIDandName(newpath);
+				Tools.stampIDandName(newpath, idAndName);
 				pdfpath = newpath;
 			} catch (IOException e) {
 				e.printStackTrace();

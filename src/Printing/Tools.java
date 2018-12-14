@@ -142,7 +142,7 @@ public class Tools {
 		file.renameTo(new File(src));
 	}
 	
-	public static void stampIDandName(String src) {
+	public static void stampIDandName(String src, String studentIDandName) {
 		String tempDest = src.substring(0, src.lastIndexOf("/") + 1) + "_" 
 							+ src.substring(src.lastIndexOf("/") + 1);
 
@@ -168,7 +168,7 @@ public class Tools {
 		Font objFont = new Font(objBaseFont, 6);
 		//[학번_이름] size = (60, 7)
 		// a4_size = 595.4, 841.8 
-		ColumnText.showTextAligned(canvas, Element.ALIGN_RIGHT, new Phrase("[201320210_최충호]", objFont), 595 - 70, 841 - 8, 0);
+		ColumnText.showTextAligned(canvas, Element.ALIGN_RIGHT, new Phrase("["+studentIDandName+"]", objFont), 595 - 70, 841 - 8, 0);
 		try {
 			stamper.close();
 			reader.close();

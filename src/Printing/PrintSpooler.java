@@ -31,11 +31,10 @@ public class PrintSpooler { // Singleton
 	static List<PrintService> printerlist = new ArrayList<PrintService>();
 	
 	static boolean isAvailable = true;
-	
 	private Alarm alarm = new Alarm();
 	
 	public PrintSpooler() {
-		// 프린터 목록 생성 및 초기화		
+		// 프린터 목록 생성 및 초기화	
 	}
 	
 	//각 프린터에 작업완료 이벤트리스터 설정
@@ -56,8 +55,8 @@ public class PrintSpooler { // Singleton
 	
 	//한 프린터의 작업완료시 처리해야할 작업
 	public void jobCompleteProcess(PrintService ps) {
-		System.out.println("\\u001B[34m" + currentJobList.get(ps.getName()).getStudentIDandName()
-							+": " + ps.getName() + "\u001B[0m");
+		System.out.println("[완료] "+currentJobList.get(ps.getName()).getStudentIDandName()
+							+": " + ps.getName());
 		alarm.playAlarm();
 		currentJobList.remove(ps.getName());
 	}

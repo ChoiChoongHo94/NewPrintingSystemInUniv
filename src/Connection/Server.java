@@ -48,8 +48,6 @@ public class Server{
 		*/
 		
 		// 통신 부분
-		
-		
 	}
 	
 	public static PrintSpooler getPrintSpooler() {
