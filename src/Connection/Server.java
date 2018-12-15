@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import ManagerUI.MainApp;
-import Printing.PrintInfo;
+//import Printing.PrintInfo;
 import Printing.PrintSpooler;
 import javafx.application.Application;
 import pdfconverter.Converter;
@@ -22,14 +22,13 @@ public class Server{
 
 	public static void main(String[] args) throws Exception {
 		disableWarning();
-		Converter.setLicenses();
 		
-		Application.launch(MainApp.class, args);
-		
-		//jobq 체크 쓰레드
 		JobQueueMonitor jqm = new JobQueueMonitor();
 		jqm.start();
 		
+		Converter.setLicenses();
+		
+		Application.launch(MainApp.class, args);
 		
 		//test
 		//Converter.convertPPTtoPDF("./test_file/ppt_test.pptx", "./test_file/ppt_test.pdf", "pptx");
@@ -46,8 +45,6 @@ public class Server{
 		printspooler.print();
 		printspooler.print();
 		*/
-		
-		// 통신 부분
 	}
 	
 	public static PrintSpooler getPrintSpooler() {
@@ -89,11 +86,16 @@ public class Server{
 	static class JobQueueMonitor extends Thread {
 		@Override
 		public void run() {
+			System.out.println("[SYSTEM] JobQueueMonitor is created.");
 			while (true) { // 1초마다 실행
-				//가동중이었는지 확인
+				//test
+				//System.out.println(printspooler.jobqSize());
 				
 				//jobq 확인
-				if (!printspooler.jobqIsEmpty()) { 
+				if (!printspooler.jobqIsEmpty()) {
+					//test
+					System.out.println("Print job is found.");
+					
 					printspooler.print();
 				} else {
 					try {
@@ -105,8 +107,9 @@ public class Server{
 			}
 		}
 	}
-
-	static class Printing extends Thread {
+	
+	/*
+	class Printing extends Thread {
 		private FileReceiver fr;
 		private PrintInfo pi;
 
@@ -119,13 +122,15 @@ public class Server{
 			fr.printOptReceiving();
 			fr.fileReceiving();
 			String[] printopt = fr.getPrintOpt();
-			pi = new PrintInfo(fr.getFilePath(), Integer.getInteger(printopt[0]), 
-							   Integer.getInteger(printopt[1]), Integer.getInteger(printopt[2]), printopt[3]);
+			
+			pi = new PrintInfo(fr.getFilePath(), Integer.parseInt(printopt[0]), 
+							   Integer.parseInt(printopt[1]), Integer.parseInt(printopt[2]), printopt[3]);
 			printspooler.enjobq(pi);
-			System.out.println(printopt[3] + " 프린트 요청");
+			System.out.println(printopt[3] + " requests print!");
 		}
 	}
-
+	*/
+	
 	public static void disableWarning() {
 		System.err.close();
 		System.setErr(System.out);
@@ -211,7 +216,7 @@ class FileReceiver {
 				bos.write(data, 0, len);
 			}
 			long end = System.currentTimeMillis();
-			System.out.println("File 받기 완료! [경과시간(seconds) : " + (end - start) / 1000.0 + "]");
+			System.out.println(Thread.currentThread().getName() + "'s file receiving is complete! [Elapse time(seconds) : " + (end - start) / 1000.0 + "]");
 			bos.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -233,9 +238,12 @@ class FileReceiver {
 		int dup = 1;
 		while (true) {
 			String beforeExtension = filepath.substring(0, filepath.lastIndexOf("."));
-			filepath = beforeExtension + "(" + dup + ")" + ".pdf";
-			if (Files.notExists(Paths.get(filepath)))
+			String extension = filepath.substring(filepath.lastIndexOf("."));
+			
+			if (Files.notExists(Paths.get(beforeExtension + "(" + dup + ")" + extension))) {
+				filepath = beforeExtension + "(" + dup + ")" + extension;
 				return;
+			}
 			dup++;
 		}
 	}

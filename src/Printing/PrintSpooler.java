@@ -1,7 +1,5 @@
 package Printing;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -34,7 +32,8 @@ public class PrintSpooler { // Singleton
 	private Alarm alarm = new Alarm();
 	
 	public PrintSpooler() {
-		// 프린터 목록 생성 및 초기화	
+		// 프린터 목록 생성 및 초기화
+		System.out.println("[SYSTEM] PrintSpooler is created.");
 	}
 	
 	//각 프린터에 작업완료 이벤트리스터 설정
@@ -55,8 +54,7 @@ public class PrintSpooler { // Singleton
 	
 	//한 프린터의 작업완료시 처리해야할 작업
 	public void jobCompleteProcess(PrintService ps) {
-		System.out.println("[완료] "+currentJobList.get(ps.getName()).getStudentIDandName()
-							+": " + ps.getName());
+		System.out.println("["+ps.getName()+"] "+currentJobList.get(ps.getName()).getStudentIDandName());
 		alarm.playAlarm();
 		currentJobList.remove(ps.getName());
 	}
@@ -121,7 +119,7 @@ public class PrintSpooler { // Singleton
 		}
 		
 		//test
-		System.out.println("before deq: " + jobq.size());
+		//System.out.println("before deq: " + jobq.size());
 		//test end
 		
 		//프린트할 정보 큐에서 가져오기
@@ -131,7 +129,7 @@ public class PrintSpooler { // Singleton
 		currentJobList.put(printservice.getName(), printinfo);
 		
 		//test
-		System.out.println("after deq: " + jobq.size());
+		//System.out.println("after deq: " + jobq.size());
 		//test end
 		
 		PdfDecoder decodePdf = new PdfDecoder(true); 
@@ -161,7 +159,7 @@ public class PrintSpooler { // Singleton
 			return urgentJobq.poll();
 		return jobq.poll();
 	}
-	public boolean jobqIsEmpty() {return urgentJobq.isEmpty()||jobq.isEmpty();}
+	public boolean jobqIsEmpty() {return urgentJobq.isEmpty()&&jobq.isEmpty();}
 	public int jobqSize() {return jobq.size() + urgentJobq.size(); }
 }
 

@@ -6,11 +6,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/jpedal-trial.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="lib/aspose-slides-17.12.1-jdk16.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
@@ -22,6 +17,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/bcprov-jdk15on-1.54.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jpedal-trial.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

@@ -52,9 +52,10 @@ public class ManagerUI2Controller implements Initializable {
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		//this.qLength.textProperty().bind(new SimpleStringProperty("0"));
+		
 		ps = new PrintStream(new Console(ta));
 		System.setOut(ps);
-		System.setErr(ps);
+		//System.setErr(ps);
 		
 		setEveryColumn();
 	}
@@ -165,7 +166,7 @@ public class ManagerUI2Controller implements Initializable {
 
 	public class Console extends OutputStream{
 		private TextArea ta;
-
+		
         public Console(TextArea ta) {
             this.ta = ta;
         }

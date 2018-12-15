@@ -58,7 +58,7 @@ public class ManagerUIController {
 		printspooler.setPrinterList(tmppl);
 		printspooler.setJobCompleteListener();
 		//Thread.sleep(2000);
-		ServerThread server = new ServerThread();
+		ServerThread server = new ServerThread(printspooler);
 		server.start();
 	}
 }

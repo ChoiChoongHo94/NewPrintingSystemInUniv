@@ -126,7 +126,7 @@ public class Tools {
 			canvas = stamper.getOverContent(i);
 			Rectangle rect = reader.getPageSize(1);
 			rect.setBorder(Rectangle.BOX);
-			rect.setBorderWidth(2);
+			rect.setBorderWidth(1);
 			rect.setBorderColor(BaseColor.BLACK);
 			rect.setUseVariableBorders(true);
 			canvas.rectangle(rect);
@@ -214,6 +214,7 @@ public class Tools {
 		
 		System.gc();
 		System.runFinalization();
+		
 		File file = new File(tempDest);
 		Path original = Paths.get(src);
 		try {
