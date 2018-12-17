@@ -17,7 +17,7 @@ public class Converter {
 	public static String convertPPTXtoPDF(String src) {
 		String output = src.substring(0,src.lastIndexOf("."))
 						+ ".pdf";
-		
+		System.err.println(src);
 		Presentation presentation = new Presentation(src);
 		presentation.save(output, com.aspose.slides.SaveFormat.Pdf);
 		

@@ -35,9 +35,9 @@ public class Server{
 		//System.exit(1);
 		//PrintInfo testpi = new PrintInfo("./test_file/word_test.pdf", 0, 1);
 		
-		//String => "ÆÄÀÏ¸í.È®ÀåÀÚ pow copy border ÇÐ¹ø_ÀÌ¸§"
-		//PrintInfo testpi2 = new PrintInfo("./test_file2/ppt_test.pdf", 2, 1, 1, "201320210_ÃÖÃæÈ£"); // (path, pow, copies, border)
-		//PrintInfo testpi3 = new PrintInfo("./test_file2/ppt_test.pdf", 2, 1, 0, "201320210_ÃÖÃæÈ£");
+		//String => "ï¿½ï¿½ï¿½Ï¸ï¿½.È®ï¿½ï¿½ï¿½ï¿½ pow copy border ï¿½Ð¹ï¿½_ï¿½Ì¸ï¿½"
+		//PrintInfo testpi2 = new PrintInfo("./test_file2/ppt_test.pdf", 2, 1, 1, "201320210_ï¿½ï¿½ï¿½ï¿½È£"); // (path, pow, copies, border)
+		//PrintInfo testpi3 = new PrintInfo("./test_file2/ppt_test.pdf", 2, 1, 0, "201320210_ï¿½ï¿½ï¿½ï¿½È£");
 		//test
 		/*
 		printspooler.enjobq(testpi2);
@@ -57,20 +57,20 @@ public class Server{
 		Socket socket = null;
 		try (ServerSocket serversocket = new ServerSocket(PORT)) {// socket(), bind()
 			while (true) {
-				// ¸®½º³Ê ¼ÒÄÏ »ý¼º ÈÄ ´ë±â
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½
 				System.out.println("Waiting Client...");
-				// ¿¬°áµÇ¸é Åë½Å¿ë ¼ÒÄÏ »ý¼º
+				// ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ ï¿½ï¿½Å¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				socket = serversocket.accept(); // listen(),accept();
 				System.out.println("A client is connected.");
 				long start = System.currentTimeMillis();
 				
-				/*ÆÄÀÏÀü¼Û Å×½ºÆ®
+				/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×½ï¿½Æ®
 				FileReceiver fr = new FileReceiver(socket, SAVEPATH, start);
 				fr.printOptReceiving();
 				fr.fileReceiving();
 				*/
 				
-				// ¸ðµç ±â´É ½ÇÇà
+				// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	/*
 				Printing p = new Printing(socket, SAVEPATH, start);
 				p.start();
@@ -87,14 +87,14 @@ public class Server{
 		@Override
 		public void run() {
 			System.out.println("[SYSTEM] JobQueueMonitor is created.");
-			while (true) { // 1ÃÊ¸¶´Ù ½ÇÇà
+			while (true) { // 1ï¿½Ê¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				//test
 				//System.out.println(printspooler.jobqSize());
 				
-				//jobq È®ÀÎ
+				//jobq È®ï¿½ï¿½
 				if (!printspooler.jobqIsEmpty()) {
 					//test
-					System.out.println("Print job is found.");
+					//System.out.println("Print request is detected.");
 					
 					printspooler.print();
 				} else {
@@ -143,13 +143,13 @@ class FileReceiver {
 	int control = 0;
 	String savepath;
 
-	// ÆÄÀÏ Àü¼Û °ü·Ã
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	File f;
 	DataInputStream dis;
 	FileOutputStream fos;
 	BufferedOutputStream bos;
 
-	// ÀÎ¼â ¿É¼Ç Àü¼Û°ü·Ã
+	// ï¿½Î¼ï¿½ ï¿½É¼ï¿½ ï¿½ï¿½ï¿½Û°ï¿½ï¿½ï¿½
 	InputStreamReader isr;
 	BufferedReader br;
 	String filepath;
@@ -163,7 +163,7 @@ class FileReceiver {
 
 	private void setFilepathAndPrintOpt(String savepath, String data) {
 		filepath = savepath + data.substring(0, data.indexOf(" "));
-		//°°Àº ÆÄÀÏ¸íÀÌ ÀÌ¹Ì ÀÖ´Â Áö È®ÀÎÇÏ°í Ã³¸®.
+		//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï°ï¿½ Ã³ï¿½ï¿½.
 		if(Files.exists(Paths.get(filepath))) {
 			processDup();
 		};
@@ -171,7 +171,7 @@ class FileReceiver {
 		printOpt = data.substring(data.indexOf(" ") + 1);
 	}
 
-	public void printOptReceiving() {
+	public synchronized void printOptReceiving() {
 		try {
 			isr = new InputStreamReader(socket.getInputStream());
 			br = new BufferedReader(isr);
@@ -183,11 +183,11 @@ class FileReceiver {
 		}
 	}
 
-	public void fileReceiving() {
+	public synchronized void fileReceiving() {
 		try {
 			dis = new DataInputStream(socket.getInputStream());
 
-			// ÆÄÀÏÀ» »ý¼ºÇÏ°í ÆÄÀÏ¿¡ ´ëÇÑ Ãâ·Â ½ºÆ®¸² »ý¼º
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			f = new File(filepath);
 
 			int sleepcount = 0;
@@ -199,24 +199,24 @@ class FileReceiver {
 					e.printStackTrace();
 				}
 			}
-			System.out.println(Thread.currentThread().getName() + "'s file is created!");
-
+			
 			fos = new FileOutputStream(f);
 			bos = new BufferedOutputStream(fos);
 
-			// ¹ÙÀÌÆ® µ¥ÀÌÅÍ¸¦ Àü¼Û¹ÞÀ¸¸é¼­ ±â·Ï
+			// ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½Û¹ï¿½ï¿½ï¿½ï¿½é¼­ ï¿½ï¿½ï¿½
 			int len;
 			int size = 4096;
 			byte[] data = new byte[size];
 			while ((len = dis.read(data)) != -1) {
 				control++;
 				if (control % 10000 == 0) {
-					System.out.println("¼ö½ÅÁß..." + control / 10000);
+					System.out.println("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½..." + control / 10000);
 				}
 				bos.write(data, 0, len);
 			}
 			long end = System.currentTimeMillis();
-			System.out.println(Thread.currentThread().getName() + "'s file receiving is complete! [Elapse time(seconds) : " + (end - start) / 1000.0 + "]");
+			//System.out.println(Thread.currentThread().getName() + "'s file is transfered!");
+			//System.out.println(Thread.currentThread().getName() + "'s file receiving is complete! [Elapse time(seconds) : " + (end - start) / 1000.0 + "]");
 			bos.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -234,7 +234,7 @@ class FileReceiver {
 		}
 	}
 	
-	private synchronized void processDup() { //Áßº¹ÆÄÀÏ Ã³¸®
+	private synchronized void processDup() { //ï¿½ßºï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
 		int dup = 1;
 		while (true) {
 			String beforeExtension = filepath.substring(0, filepath.lastIndexOf("."));

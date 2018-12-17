@@ -16,7 +16,7 @@ public class PrintInfo {
 	private String studentIDandName;
 	private boolean isAddStampIDatLast = false; //copy 1 = false, copy > 1 = true;
 	
-	//»ý¼ºÀÚ
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	public PrintInfo(String path, int pow, int copy, int border, String idAndName) {
 		
 		//test
@@ -29,6 +29,8 @@ public class PrintInfo {
 			try {
 				path = Converter.convertDOCXtoPDF(path);
 			} catch (Exception e1) {
+				System.err.println(path);
+				System.err.println(path.substring(path.lastIndexOf(".") +1) );
 				e1.printStackTrace();
 			}
 		else if(path.substring(path.lastIndexOf(".") +1 ).equalsIgnoreCase("pptx"))

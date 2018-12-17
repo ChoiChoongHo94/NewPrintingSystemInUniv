@@ -12,6 +12,8 @@ import javax.print.PrintException;
 import javax.print.PrintService;
 import javax.print.SimpleDoc;
 import javax.print.attribute.standard.QueuedJobCount;
+import javax.print.event.PrintJobEvent;
+import javax.print.event.PrintJobListener;
 import javax.print.event.PrintServiceAttributeEvent;
 import javax.print.event.PrintServiceAttributeListener;
 
@@ -24,39 +26,54 @@ public class PrintSpooler { // Singleton
 	
 	//static private List<String> ongoingPrinters = new ArrayList<String>();
 	static private HashMap<String,PrintInfo> currentJobList = new HashMap<String,PrintInfo>();
+	static private HashMap<String,PrintInfo> alarmList = new HashMap<String,PrintInfo>();
 	static private Queue<PrintInfo> urgentJobq = new LinkedList<PrintInfo>();
 	static private Queue<PrintInfo> jobq = new LinkedList<PrintInfo>();
 	static List<PrintService> printerlist = new ArrayList<PrintService>();
+	
 	
 	static boolean isAvailable = true;
 	private Alarm alarm = new Alarm();
 	
 	public PrintSpooler() {
-		// ÇÁ¸°ÅÍ ¸ñ·Ï »ý¼º ¹× ÃÊ±âÈ­
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ê±ï¿½È­
 		System.out.println("[SYSTEM] PrintSpooler is created.");
 	}
 	
-	//°¢ ÇÁ¸°ÅÍ¿¡ ÀÛ¾÷¿Ï·á ÀÌº¥Æ®¸®½ºÅÍ ¼³Á¤
+	//ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ ï¿½Û¾ï¿½ï¿½Ï·ï¿½ ï¿½Ìºï¿½Æ®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	public void setJobCompleteListener() {
 		for(PrintService ps : printerlist) {
 			ps.addPrintServiceAttributeListener((PrintServiceAttributeListener) new PrintServiceAttributeListener() {
 				@Override
 				public void attributeUpdate(PrintServiceAttributeEvent psae) {
+					
 					PrintService ps = psae.getPrintService();
+					
+					//test
+					/*
+					System.out.println("@@@@@@@@@@ psae @@@@@@@@@");
+					System.out.println(ps.getAttribute(PrinterIsAcceptingJobs.class).toString());
+					System.out.println(ps.getAttribute(QueuedJobCount.class).toString());
+					*/
+					
 					if(ps.getAttribute(QueuedJobCount.class).toString().equals("0") 
 							&& currentJobList.containsKey(ps.getName())) {
 						jobCompleteProcess(ps);
-					}
+						currentJobList.remove(ps.getName());
+						alarmList.remove(ps.getName());
+					}	
 				}
 			});
 		}
 	}
 	
-	//ÇÑ ÇÁ¸°ÅÍÀÇ ÀÛ¾÷¿Ï·á½Ã Ã³¸®ÇØ¾ßÇÒ ÀÛ¾÷
-	public void jobCompleteProcess(PrintService ps) {
-		System.out.println("["+ps.getName()+"] "+currentJobList.get(ps.getName()).getStudentIDandName());
+	//ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Û¾ï¿½ï¿½Ï·ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½Ø¾ï¿½ï¿½ï¿½ ï¿½Û¾ï¿½
+	public synchronized void jobCompleteProcess(PrintService ps) {
+		//test
+		//System.out.println(alarmList.get(ps.getName()).getStudentIDandName());
+		
+		System.out.println("[í”„ë¦°íŠ¸ ì™„ë£Œ] "+ps.getName()+": "+alarmList.get(ps.getName()).getStudentIDandName());
 		alarm.playAlarm();
-		currentJobList.remove(ps.getName());
 	}
 	
 	public void setPrinterList(List<PrintService> tmppl) { 
@@ -75,6 +92,8 @@ public class PrintSpooler { // Singleton
 		}
 		*/
 		printerlist = tmppl;
+		for(PrintService ps : printerlist)
+			System.out.println(ps.getName() + "(Printer) is connected.");
 		System.out.println("Connected printers: " + printerlist.size());
 	}
 	
@@ -97,10 +116,12 @@ public class PrintSpooler { // Singleton
 	public void deletePrinter(PrintService ps) {
 		if(!ps.getAttribute(QueuedJobCount.class).toString().equals("0")) {
 			enUrgentJobq(currentJobList.get(ps.getName()));
-			System.out.println(ps.getName()+"'s print job is enqueued into urgertJobq.");
+			System.out.println(ps.getName()+"'s prints job is enqueued into urgertJobq.");
 		}
 		printerlist.remove(ps);
-		System.out.println(ps.getName() + " is removed.");
+		currentJobList.remove(ps.getName());
+		alarmList.remove(ps.getName());
+		System.out.println(ps.getName() + " is stopped.");
 		System.out.println("Connected printers: " + printerlist.size());
 	}
 	
@@ -110,28 +131,20 @@ public class PrintSpooler { // Singleton
 		System.out.println("Connected printers: " + printerlist.size());
 	}
 	
-	public void print() { //job setting and print, PrintSpooler Àü¿ë
+	public void print() { //job setting and print, PrintSpooler ï¿½ï¿½ï¿½ï¿½
 		PrintService printservice = findPrintService();
 
 		if(printservice == null) {
 			System.out.println("Critical Error. System is exited.");
 			System.exit(0);
 		}
-		
-		//test
-		//System.out.println("before deq: " + jobq.size());
-		//test end
-		
-		//ÇÁ¸°Æ®ÇÒ Á¤º¸ Å¥¿¡¼­ °¡Á®¿À±â
+
+		//ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¥ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		PrintInfo printinfo = dejobq();
 		
-		//ÇöÀç ÀÛ¾÷ ÀÓ½ÃÀúÀå
+		//ï¿½ï¿½ï¿½ï¿½ ï¿½Û¾ï¿½ ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½
 		currentJobList.put(printservice.getName(), printinfo);
-		
-		//test
-		//System.out.println("after deq: " + jobq.size());
-		//test end
-		
+
 		PdfDecoder decodePdf = new PdfDecoder(true); 
 		try {
 			decodePdf.openPdfFile(printinfo.getPdfPath());
@@ -145,6 +158,44 @@ public class PrintSpooler { // Singleton
 		PdfBook pdfBook = new PdfBook(decodePdf, printservice, printinfo.getAttrSet());
 		SimpleDoc doc = new SimpleDoc(pdfBook, DocFlavor.SERVICE_FORMATTED.PAGEABLE, null);
 		DocPrintJob job = printservice.createPrintJob();
+		job.addPrintJobListener((PrintJobListener) new PrintJobListener() {
+
+			@Override
+			public void printJobCanceled(PrintJobEvent arg0) {
+				System.err.println("cancel");
+				currentJobList.remove(printservice.getName());
+				alarmList.remove(printservice.getName());
+			}
+
+			@Override
+			public void printJobCompleted(PrintJobEvent arg0) {}
+
+			@Override
+			public void printJobFailed(PrintJobEvent arg0) {
+				System.err.println("fail");
+				currentJobList.remove(printservice.getName());
+				alarmList.remove(printservice.getName());
+			}
+
+			@Override
+			public void printJobNoMoreEvents(PrintJobEvent arg0) {}
+
+			@Override
+			public void printJobRequiresAttention(PrintJobEvent arg0) {}
+
+			@Override
+			public void printDataTransferCompleted(PrintJobEvent arg0) {
+				if(alarmList.containsKey(printservice.getName())){
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					jobCompleteProcess(printservice);
+				}
+				alarmList.put(printservice.getName(), printinfo);
+			}
+		});
 		try {
 			job.print(doc, printinfo.getAttrSet());
 		} catch (PrintException e) {

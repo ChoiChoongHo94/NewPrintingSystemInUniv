@@ -20,21 +20,20 @@ public class ServerThread extends Thread{
 	public void run() {
 		Socket socket = null;
 		try (ServerSocket serversocket = new ServerSocket(PORT)) {// socket(), bind()
+			System.out.println("Waiting Client...");
 			while (true) {
-				// ¸®½º³Ê ¼ÒÄÏ »ý¼º ÈÄ ´ë±â
-				System.out.println("Waiting Client...");
-				// ¿¬°áµÇ¸é Åë½Å¿ë ¼ÒÄÏ »ý¼º
+				// ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ ï¿½ï¿½Å¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				socket = serversocket.accept(); // listen(),accept();
-				System.out.println("A client is connected.");
+				//System.out.println("A client is connected.");
 				long start = System.currentTimeMillis();
 				
-				/*ÆÄÀÏÀü¼Û Å×½ºÆ®
+				/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×½ï¿½Æ®
 				FileReceiver fr = new FileReceiver(socket, SAVEPATH, start);
 				fr.printOptReceiving();
 				fr.fileReceiving();
 				*/
 				
-				// ¸ðµç ±â´É ½ÇÇà
+				// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				Printing p = new Printing(socket, SAVEPATH, start);
 				p.start();
 			}

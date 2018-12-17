@@ -3,7 +3,9 @@ package ManagerUI;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.text.Normalizer;
 import java.util.ResourceBundle;
 
 import javax.print.PrintService;
@@ -41,7 +43,7 @@ public class ManagerUI2Controller implements Initializable {
 	private Label qLength;
 	private PrintStream ps;
 	
-	//«¡∏∞≈Õ TableView ∫Œ∫–
+	//ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ TableView ÔøΩŒ∫ÔøΩ
 	@FXML
 	private TableView<PrintService> printerStateTable;
 	@FXML
@@ -76,7 +78,7 @@ public class ManagerUI2Controller implements Initializable {
                 final TableCell<PrintService, Void> cell = new TableCell<PrintService, Void>() {
                 	
                 	TableCell<PrintService, Void> thisCell = this;
-                    private Button btn = new Button("¡ﬂ¡ˆ");
+                    private Button btn = new Button("Í∞ÄÎèô Ï§ëÏßÄ");
                     {
                     	btn.setTextFill(Color.RED);
                     	btn.setFont(Font.font("System",FontWeight.EXTRA_BOLD, 12));
@@ -84,13 +86,13 @@ public class ManagerUI2Controller implements Initializable {
                         btn.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent event) {
-                            	if(btn.getText().equals("¡ﬂ¡ˆ")){
-                            		btn.setText("¿Á∞°µø");
+                            	if(btn.getText().equals("Í∞ÄÎèô Ï§ëÏßÄ")){
+                            		btn.setText("Ïû¨Í∞ÄÎèô");
                             		btn.setTextFill(Color.GREEN);
 									handleStopBtn(thisCell.getTableRow().getItem());
                             	}
                             	else {
-                            		btn.setText("¡ﬂ¡ˆ");
+                            		btn.setText("Í∞ÄÎèô Ï§ëÏßÄ");
                             		btn.setTextFill(Color.RED);
                             		handleRestartBtn(thisCell.getTableRow().getItem());
                             	}
@@ -131,7 +133,7 @@ public class ManagerUI2Controller implements Initializable {
 	public void setPrimaryStage(Stage primaryStage) {
 		mainPrimaryStage = primaryStage;
 		
-		//¥›±‚ ¿Ã∫•∆Æ
+		//ÔøΩ›±ÔøΩ ÔøΩÃ∫ÔøΩ∆Æ
 		mainPrimaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent we) {
@@ -153,7 +155,7 @@ public class ManagerUI2Controller implements Initializable {
 		@Override
 		protected String call() throws Exception {
 			// TODO Auto-generated method stub
-			while (true) { // 1√ ∏∂¥Ÿ jobq∏¶ »Æ¿Œ.
+			while (true) { // 1ÔøΩ ∏ÔøΩÔøΩÔøΩ jobqÔøΩÔøΩ »ÆÔøΩÔøΩ.
 				updateValue(((Integer) printspooler.jobqSize()).toString());
 				try {
 					Thread.sleep(1000);
@@ -165,7 +167,40 @@ public class ManagerUI2Controller implements Initializable {
 	}
 
 	public class Console extends OutputStream{
+		final TextArea ta;
+	    final byte[] txt = new byte[4096];
+	    int pos = 0;
+	    Object obj = new Object();
+
+	    public Console(TextArea _ta) {
+	        ta = _ta;
+	    }
+
+	    public void write(int b) {
+	    	/*
+	        synchronized (obj) {
+	            txt[pos++] = (byte)b;
+	        }
+	        */
+	    	txt[pos++] = (byte)b;
+	    	if((char)b == '\n') {
+	    		Platform.runLater(() -> {
+	                //ta.appendText(new String(txt, 0, pos));
+	                try {
+						ta.appendText(new String(txt, 0, pos, "UTF-8"));
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	                pos = 0;
+	            });
+	    	}	
+	    }
+
+
+		/*
 		private TextArea ta;
+		private String tmp_string="";
 		
         public Console(TextArea ta) {
             this.ta = ta;
@@ -176,8 +211,15 @@ public class ManagerUI2Controller implements Initializable {
         }
 
         public void write(int b) throws IOException {
-            appendText(String.valueOf((char)b));
+        	if((char)b == '\n') {
+        		appendText(tmp_string + String.valueOf((char)b));
+        		tmp_string = "";
+        	}
+        	else {
+        		tmp_string += String.valueOf((char)b);
+        	}
         }
+        */
 	}
 	
 	public void setMainApp(MainApp mainApp) { this.mainApp = mainApp;}
